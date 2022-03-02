@@ -82,6 +82,7 @@ void Bus::Step(int cycles) {
   }
 
   scheduler.AddCycles(cycles);
+  hw.timer.Step(cycles);
 
   if (prefetch.active) {
     prefetch.countdown -= cycles;

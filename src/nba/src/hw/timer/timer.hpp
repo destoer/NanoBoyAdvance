@@ -26,6 +26,7 @@ struct Timer {
   void Reset();
   auto Read (int chan_id, int offset) -> u8;
   void Write(int chan_id, int offset, u8 value);
+  void Step(int cycles);
 
 private:
   enum Registers {
@@ -37,6 +38,7 @@ private:
     int id;
     u16 reload = 0;
     u32 counter = 0;
+    u16 latch_reload;
 
     struct Control {
       int frequency = 0;
@@ -52,11 +54,13 @@ private:
     u64 timestamp_started;
     Scheduler::Event* event = nullptr;
     std::function<void(int)> event_cb;
+    int delay;
   } channels[4];
 
   Scheduler& scheduler;
   IRQ& irq;
   APU& apu;
+  int prescalers[4];
 
   auto GetCounterDeltaSinceLastUpdate(Channel const& channel) -> u32;
   void StartChannel(Channel& channel, int cycles_late);
